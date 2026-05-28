@@ -1,0 +1,59 @@
+@model IEnumerable<MiTiendaWeb.Models.Cerveza>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.nombre)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.alcohol)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.idEstilo)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Estilo)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.precio)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(model => item.nombre)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.alcohol)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.idEstilo)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.Estilo)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.precio)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.id">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.id">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.id">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
