@@ -20,5 +20,7 @@ namespace MiTiendaWeb.Models
         [Required(ErrorMessage = "Ingresa el precio de la cerveza")]
         [Display(Name = "Precio")]
         public double precio { get; set; }
+        [Display(Name = "Imagen")]
+        public string? urlImagen { get; set; }
     }
 }

@@ -45,6 +45,15 @@
             @Html.DisplayFor(model => model.precio)
         </dd>
     </dl>
+        </dl>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.urlImagen)
+        </dt>
+        <dd class = "col-sm-10">
+            <img src="/@Model.urlImagen" width="50%"/>
+            
+        </dd>
+    </dl>
 </div>
 <div>
     <a asp-action="Edit" asp-route-id="@Model?.id">Edit</a> |

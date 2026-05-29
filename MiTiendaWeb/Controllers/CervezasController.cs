@@ -7,10 +7,12 @@ using MiTiendaWeb.Data;
 public class CervezasController : Controller
 {
     private readonly ApplicationDbContext _context;
+    private readonly IWebHostEnvironment _hostEnviroment;
 
-    public CervezasController(ApplicationDbContext context)
+    public CervezasController(ApplicationDbContext context, IWebHostEnvironment hostEnviroment)
     {
         _context = context;
+        _hostEnviroment = hostEnviroment;
     }
 
     // GET: CERVEZAS
@@ -48,10 +50,23 @@ public class CervezasController : Controller
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create([Bind("id,nombre,alcohol,idEstilo,Estilo,precio")] Cerveza cerveza)
+    public async Task<IActionResult> Create([Bind("id,nombre,alcohol,idEstilo,Estilo,precio, urlImagen")] Cerveza cerveza)
     {
         if (ModelState.IsValid)
         {
+            string rutaPrincipal = _hostEnviroment.WebRootPath;
+            var archivos = HttpContext.Request.Form.Files;
+            if (archivos.Count > 0)
+            {
+                string nombreArchivo = Guid.NewGuid().ToString();
+                var subidas = Path.Combine(rutaPrincipal, @"imagenes\cervezas");
+                var extension = Path.GetExtension(archivos[0].FileName);
+                using (var fileStream = new FileStream(Path.Combine(subidas, nombreArchivo + extension), FileMode.Create))
+                {
+                    archivos[0].CopyTo(fileStream);
+                }
+                cerveza.urlImagen = @"imagenes\cervezas\" + nombreArchivo + extension;
+            }
             _context.Add(cerveza);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
@@ -80,7 +95,7 @@ public class CervezasController : Controller
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int? id, [Bind("id,nombre,alcohol,idEstilo,Estilo,precio")] Cerveza cerveza)
+    public async Task<IActionResult> Edit(int? id, [Bind("id,nombre,alcohol,idEstilo,Estilo,precio, urlImagen")] Cerveza cerveza)
     {
         if (id != cerveza.id)
         {
@@ -91,7 +106,32 @@ public class CervezasController : Controller
         {
             try
             {
-                _context.Update(cerveza);
+                string rutaPrincipal = _hostEnviroment.WebRootPath;
+                var archivos = HttpContext.Request.Form.Files;
+                if (archivos.Count > 0)
+                {
+                    Cerveza? cervezabd = await _context.Cerveza.FindAsync(id);
+                    if(cervezabd != null && cervezabd.urlImagen != null)
+                    {
+                        var rutaImagenActual = Path.Combine(rutaPrincipal, cervezabd.urlImagen);
+                        if(System.IO.File.Exists(rutaImagenActual))
+                        {
+                            System.IO.File.Delete(rutaImagenActual);
+                        }
+                        _context.Entry(cervezabd).State = EntityState.Detached;
+                    }
+                    string nombreArchivo = Guid.NewGuid().ToString();
+                    var subidas = Path.Combine(rutaPrincipal, @"imagenes\cervezas");
+                    var extension = Path.GetExtension(archivos[0].FileName);
+                    using (var fileStream = new FileStream(Path.Combine(subidas, nombreArchivo + extension), FileMode.Create))
+                    {
+                        archivos[0].CopyTo(fileStream);
+                    }
+                    cerveza.urlImagen = @"imagenes\cervezas\" + nombreArchivo + extension;
+                    _context.Entry(cerveza).State = EntityState.Modified;
+
+                }
+                    _context.Update(cerveza);
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
