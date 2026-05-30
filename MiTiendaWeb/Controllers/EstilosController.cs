@@ -1,150 +1,156 @@
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using MiTiendaWeb.Models;
 using MiTiendaWeb.Data;
+using MiTiendaWeb.Models;
 
-public class EstilosController : Controller
+namespace MiTiendaWeb.Areas.Admin.Controllers
 {
-    private readonly ApplicationDbContext _context;
-
-    public EstilosController(ApplicationDbContext context)
+    [Authorize(Roles = "Admin")]
+    [Area("Admin")]
+    public class EstilosController : Controller
     {
-        _context = context;
-    }
+        private readonly ApplicationDbContext _context;
 
-    // GET: ESTILOS
-    public async Task<IActionResult> Index()    
-    {
-        return View(await _context.Estilo.ToListAsync());
-    }
-
-    // GET: ESTILOS/Details/5
-    public async Task<IActionResult> Details(int? id)
-    {
-        if (id == null)
+        public EstilosController(ApplicationDbContext context)
         {
-            return NotFound();
+            _context = context;
         }
 
-        var estilo = await _context.Estilo
-            .FirstOrDefaultAsync(m => m.Id == id);
-        if (estilo == null)
+        // GET: ESTILOS
+        public async Task<IActionResult> Index()
         {
-            return NotFound();
+            return View(await _context.Estilo.ToListAsync());
         }
 
-        return View(estilo);
-    }
-
-    // GET: ESTILOS/Create
-    public IActionResult Create()
-    {
-        return View();
-    }
-
-    // POST: ESTILOS/Create
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create([Bind("Id,nombre")] Estilo estilo)
-    {
-        if (ModelState.IsValid)
+        // GET: ESTILOS/Details/5
+        public async Task<IActionResult> Details(int? id)
         {
-            _context.Add(estilo);
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var estilo = await _context.Estilo
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (estilo == null)
+            {
+                return NotFound();
+            }
+
+            return View(estilo);
+        }
+
+        // GET: ESTILOS/Create
+        public IActionResult Create()
+        {
+            return View();
+        }
+
+        // POST: ESTILOS/Create
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create([Bind("Id,nombre")] Estilo estilo)
+        {
+            if (ModelState.IsValid)
+            {
+                _context.Add(estilo);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+            return View(estilo);
+        }
+
+        // GET: ESTILOS/Edit/5
+        public async Task<IActionResult> Edit(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var estilo = await _context.Estilo.FindAsync(id);
+            if (estilo == null)
+            {
+                return NotFound();
+            }
+            return View(estilo);
+        }
+
+        // POST: ESTILOS/Edit/5
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int? id, [Bind("Id,nombre")] Estilo estilo)
+        {
+            if (id != estilo.Id)
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    _context.Update(estilo);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!EstiloExists(estilo.Id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+                return RedirectToAction(nameof(Index));
+            }
+            return View(estilo);
+        }
+
+        // GET: ESTILOS/Delete/5
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var estilo = await _context.Estilo
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (estilo == null)
+            {
+                return NotFound();
+            }
+
+            return View(estilo);
+        }
+
+        // POST: ESTILOS/Delete/5
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int? id)
+        {
+            var estilo = await _context.Estilo.FindAsync(id);
+            if (estilo != null)
+            {
+                _context.Estilo.Remove(estilo);
+            }
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
-        return View(estilo);
-    }
 
-    // GET: ESTILOS/Edit/5
-    public async Task<IActionResult> Edit(int? id)
-    {
-        if (id == null)
+        private bool EstiloExists(int? id)
         {
-            return NotFound();
+            return _context.Estilo.Any(e => e.Id == id);
         }
-
-        var estilo = await _context.Estilo.FindAsync(id);
-        if (estilo == null)
-        {
-            return NotFound();
-        }
-        return View(estilo);
-    }
-
-    // POST: ESTILOS/Edit/5
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int? id, [Bind("Id,nombre")] Estilo estilo)
-    {
-        if (id != estilo.Id)
-        {
-            return NotFound();
-        }
-
-        if (ModelState.IsValid)
-        {
-            try
-            {
-                _context.Update(estilo);
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!EstiloExists(estilo.Id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-            return RedirectToAction(nameof(Index));
-        }
-        return View(estilo);
-    }
-
-    // GET: ESTILOS/Delete/5
-    public async Task<IActionResult> Delete(int? id)
-    {
-        if (id == null)
-        {
-            return NotFound();
-        }
-
-        var estilo = await _context.Estilo
-            .FirstOrDefaultAsync(m => m.Id == id);
-        if (estilo == null)
-        {
-            return NotFound();
-        }
-
-        return View(estilo);
-    }
-
-    // POST: ESTILOS/Delete/5
-    [HttpPost, ActionName("Delete")]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> DeleteConfirmed(int? id)
-    {
-        var estilo = await _context.Estilo.FindAsync(id);
-        if (estilo != null)
-        {
-            _context.Estilo.Remove(estilo);
-        }
-
-        await _context.SaveChangesAsync();
-        return RedirectToAction(nameof(Index));
-    }
-
-    private bool EstiloExists(int? id)
-    {
-        return _context.Estilo.Any(e => e.Id == id);
     }
 }

@@ -1,8 +1,67 @@
-﻿@{
+﻿@model IEnumerable<MiTiendaWeb.Models.Cerveza>
+@{
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div id="carouselExampleIndicators" class="carousel slide">
+    <div class="carousel-indicators">
+        <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+        <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1" aria-label="Slide 2"></button>
+        <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2" aria-label="Slide 3"></button>
+    </div>
+    <div class="carousel-inner">
+        <div class="carousel-item active">
+            <img src="/imagenes/sliders/primer-slide.jpg" class="d-block w-100" alt="...">
+        </div>
+        <div class="carousel-item">
+            <img src="~/imagenes/sliders/segundo-slide.jpeg" class="d-block w-100" alt="...">
+        </div>
+        <div class="carousel-item">
+            <img src="/imagenes/sliders/tercer-slide.jpg" class="d-block w-100" alt="...">
+        </div>
+    </div>
+    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+    </button>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col-md-6 col-sm-12 d-flex justify-content-center">
+            <h1>Ultimas cervezas</h1>
+        </div>
+    </div>
+    <div class="row">
+        @*
+            Todo esto me dio error al ejecutar, se crea un punto de interrupcion, no se compilar y lo deje comentado.
+        *@
+@*         @if(Model.Count()>0) <= aqui se crea al primero, no se porque.
+        {
+            @foreach (var cerveza in Model.OrderBy(o => o.id)) <= aqui se crea el segundo, esta escrito tal cual como en el video.
+            {
+                <div class="col-sm-12 col-md-3">
+                    <div class="card" style="width: 18rem;">
+                        <img src="@cerveza.urlImagen" class="card-img-top" alt="...">
+                        <div class="card-body">
+                            <h5 class="card-title">@cerveza.nombre</h5>
+
+                        </div>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">@Html.DisplayNameFor(modelItem => cerveza.idEstilo): @cerveza.Estilo.nombre</li>
+                            <li class="list-group-item">@Html.DisplayNameFor(modelItem => cerveza.alcohol): @cerveza.alcohol</li>
+                            <li class="list-group-item">@Html.DisplayNameFor(modelItem => cerveza.precio): @cerveza.precio</li>
+                        </ul>
+                        <div class="card-body">
+                            <a class="card-link">Detalles</a>
+
+                        </div>
+                    </div>
+                </div>
+            }
+        } *@
+    </div>
 </div>
